@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
+from mtcnn.mtcnn import MTCNN
 
 # Load the cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 profile_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_profileface.xml')
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
+# create the detector, using default weights
+detector = MTCNN()
 
 def get_faces_with_eye(faces, eyes, margin=0.8):
     """
@@ -95,6 +98,33 @@ def detect_face_opencv(frame):
     return faces_with_eye
 
 
+def detect_face_mtcnn(frame):
+    """
+    Detect faces in a frame
+
+    Arguments:
+    frame -- RGB image (X, Y , 3)
+    Return:
+    faces -- numpy array containing boxes for detected faces (nb faces, 4)
+    """
+
+    # Detect the faces
+    boxes = detector.detect_faces(frame)
+
+    # Convert the faces into a matrix
+    faces = np.array([]).reshape((0, 4))
+
+    # Extract the face only if there is one
+    if boxes:
+        for box in boxes:
+            faces = np.append(faces, np.array(box['box']).reshape((1,4)), axis=0)
+
+    # Convert float into integer
+    faces = np.array(faces, dtype=int)
+
+    return faces
+
+
 if __name__ == '__main__':
     # define a video capture object
     vid = cv2.VideoCapture(0)
@@ -104,8 +134,8 @@ if __name__ == '__main__':
         # Capture the video frame
         # by frame
         _, frame = vid.read()
-
-        faces = detect_face_opencv(frame)
+        # if True:
+        faces = detect_face_mtcnn(frame)
 
         i = 0
         # Draw the rectangle around each face
