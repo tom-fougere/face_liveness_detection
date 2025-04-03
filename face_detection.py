@@ -10,6 +10,7 @@ eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml
 # create the detector, using default weights
 detector = MTCNN()
 
+
 def get_faces_with_eye(faces, eyes, margin=0.8):
     """
     Filter faces by removing faces with no detected eye
@@ -134,7 +135,7 @@ if __name__ == '__main__':
         # Capture the video frame
         # by frame
         _, frame = vid.read()
-        # if True:
+
         faces = detect_face_mtcnn(frame)
 
         i = 0
